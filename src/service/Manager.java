@@ -3,6 +3,7 @@ package service;
 import model.Task;
 import model.Epic;
 import model.SubTask;
+import model.Status;
 
 import java.util.HashMap;
 
@@ -34,20 +35,23 @@ public class Manager {
 
     public void deleteAllTasks() {
         dataTask.clear();
-        dataEpic.clear();
         dataSubTask.clear();
+        dataEpic.clear();
     }
 
-    public void getNameTaskById(Integer idEnter) {
+    public Task getTaskById(Integer idEnter) {
+        Task task;
         if (dataTask.containsKey(idEnter)) {
-            System.out.println(dataTask.get(idEnter));
+            task = dataTask.get(idEnter);
         } else if (dataEpic.containsKey(idEnter)) {
-            System.out.println(dataEpic.get(idEnter));
+            task = dataEpic.get(idEnter);
         } else if (dataSubTask.containsKey(idEnter)) {
-            System.out.println(dataSubTask.get(idEnter));
+            task = dataSubTask.get(idEnter);
         } else {
             System.out.println("Такого ID нет");
+            task = null;
         }
+        return task;
     }
     public void deleteTaskById(Integer idEnter) {
         if (dataTask.containsKey(idEnter)) {
@@ -67,7 +71,7 @@ public class Manager {
         }
     }
 
-    public void createOrUpdateTask(Integer idEnter, String name, String description, String status) {
+    public void createOrUpdateTask(Integer idEnter, String name, String description, Status status) {
         if (dataTask.containsKey(idEnter)) {
             dataTask.remove(idEnter);
             Task newTask = new Task(idEnter, name, description, status);
@@ -83,7 +87,7 @@ public class Manager {
         }
     }
 
-    public void createOrUpdateEpic(Integer idEnter, String name, String description, String status) {
+    public void createOrUpdateEpic(Integer idEnter, String name, String description, Status status) {
         if (dataEpic.containsKey(idEnter)) {
             Epic currentEpic = dataEpic.get(idEnter);
             if (currentEpic.getStatus().equals(status)) {
@@ -94,10 +98,9 @@ public class Manager {
                 System.out.println("Обновление эпика зависит от статуса Подзадач. Обновление вручную невозможно.");
             }
         } else if (idEnter == null){
-            if (status == "NEW") {
+            if (status == Status.NEW) {
                 id++;
                 Epic newEpic = new Epic(id, name, description, status);
-                newEpic.setId(id);
                 dataEpic.put(id, newEpic);
             } else {
                 System.out.println("Для нового эпика введите статус NEW");
@@ -113,29 +116,29 @@ public class Manager {
 
         int countOfDoneSubTasks = 0;
         for (SubTask subTask : dubMapOfSubTasks.values()) {
-            String currentStatus = subTask.getStatus();
-            if (currentStatus.equals("DONE")) {
+            Status currentStatus = subTask.getStatus();
+            if (currentStatus.equals(Status.DONE)) {
                 countOfDoneSubTasks++;
             }
         }
 
         int countOfInProgressSubTasks = 0;
         for (SubTask subTask : dubMapOfSubTasks.values()) {
-            String currentStatus = subTask.getStatus();
-            if (currentStatus.equals("IN_PROGRESS")) {
+            Status currentStatus = subTask.getStatus();
+            if (currentStatus.equals(Status.IN_PROGRESS)) {
                 countOfInProgressSubTasks++;
             }
         }
 
         if (countOfDoneSubTasks == 0 && countOfInProgressSubTasks == 0) {
-            epicForCheck.setStatus("NEW");
+            epicForCheck.setStatus(Status.NEW);
         } else if (countOfDoneSubTasks == 0 && countOfInProgressSubTasks != 0) {
-            epicForCheck.setStatus("IN_PROGRESS");
+            epicForCheck.setStatus(Status.IN_PROGRESS);
         } else if (countOfDoneSubTasks == dubMapOfSubTasks.size()){
-            epicForCheck.setStatus("DONE");
+            epicForCheck.setStatus(Status.DONE);
         }
     }
-    public void createOrUpdateSubTask(Integer idEnter, String name, String description, String status
+    public void createOrUpdateSubTask(Integer idEnter, String name, String description, Status status
             , Integer idOfEpic) {
         if (dataEpic.containsKey(idOfEpic)) {
             if (dataSubTask.containsKey(idEnter)) {
