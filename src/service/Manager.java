@@ -13,24 +13,27 @@ public class Manager {
     HashMap<Integer, Epic> dataEpic = new HashMap<>();
     HashMap<Integer, SubTask> dataSubTask = new HashMap<>();
 
-
-
-    public void getListAllTasks() {
+    public HashMap<Integer, Task> getListAllTasks() {
+        HashMap<Integer, Task> dataAllTasks = new HashMap<>();
         System.out.println("Список одтельных задач:");
         for (Integer id : dataTask.keySet()) {
             System.out.println("ID " + id + " " + dataTask.get(id));
+            dataAllTasks.put(id, dataTask.get(id));
         }
         System.out.println(".................");
         System.out.println("Список эпиков:");
         for (Integer id : dataEpic.keySet()) {
             System.out.println("ID " + id + " " + dataEpic.get(id));
+            dataAllTasks.put(id, dataEpic.get(id));
         }
         System.out.println(".................");
         System.out.println("Список подзадач:");
         for (Integer id : dataSubTask.keySet()) {
             System.out.println("ID " + id + " " + dataSubTask.get(id));
+            dataAllTasks.put(id, dataSubTask.get(id));
         }
         System.out.println(".................");
+        return dataAllTasks;
     }
 
     public void deleteAllTasks() {
