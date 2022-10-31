@@ -27,7 +27,7 @@ public class Main {
         manager.getListAllTasks();
         System.out.println("***********");
         manager.deleteTaskById(1);
-        manager.deleteTaskById(3);
+        manager.deleteTaskById(4);
         manager.getListAllTasks();
         System.out.println("***********");
     }

@@ -5,6 +5,7 @@ import model.Epic;
 import model.SubTask;
 import model.Status;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Manager {
@@ -13,24 +14,26 @@ public class Manager {
     HashMap<Integer, Epic> dataEpic = new HashMap<>();
     HashMap<Integer, SubTask> dataSubTask = new HashMap<>();
 
-    public HashMap<Integer, Task> getListAllTasks() {
-        HashMap<Integer, Task> dataAllTasks = new HashMap<>();
+
+
+    public ArrayList<Task> getListAllTasks() {
+        ArrayList<Task> dataAllTasks = new ArrayList<>();
         System.out.println("Список одтельных задач:");
         for (Integer id : dataTask.keySet()) {
             System.out.println("ID " + id + " " + dataTask.get(id));
-            dataAllTasks.put(id, dataTask.get(id));
+            dataAllTasks.add(dataTask.get(id));
         }
         System.out.println(".................");
         System.out.println("Список эпиков:");
         for (Integer id : dataEpic.keySet()) {
             System.out.println("ID " + id + " " + dataEpic.get(id));
-            dataAllTasks.put(id, dataEpic.get(id));
+            dataAllTasks.add(dataEpic.get(id));
         }
         System.out.println(".................");
         System.out.println("Список подзадач:");
         for (Integer id : dataSubTask.keySet()) {
             System.out.println("ID " + id + " " + dataSubTask.get(id));
-            dataAllTasks.put(id, dataSubTask.get(id));
+            dataAllTasks.add(dataSubTask.get(id));
         }
         System.out.println(".................");
         return dataAllTasks;
@@ -68,7 +71,15 @@ public class Manager {
             }
             dataEpic.remove(idEnter);
         } else if (dataSubTask.containsKey(idEnter)) {
+            SubTask dubSubTask = dataSubTask.get(idEnter);
+            int idOfEpic = dubSubTask.getIdOfEpic();
+            Epic dubEpic = dataEpic.get(idOfEpic);
+            HashMap<Integer, SubTask> dubMapOfSubTasks = dubEpic.getMapOfSubTasks();
+            dubMapOfSubTasks.remove(idEnter);
+
             dataSubTask.remove(idEnter);
+
+            checkStatusEpic(dubEpic);
         } else {
             System.out.println("Такого ID нет");
         }
