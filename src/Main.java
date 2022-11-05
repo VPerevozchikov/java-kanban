@@ -22,7 +22,7 @@ public class Main {
         manager.createOrUpdateSubTask(null,"Навязать арматуру", "диаметр 10мм, шаг 200мм", Status.DONE, 3);
         manager.createOrUpdateEpic(null,"Сбросить 10 кг", "за 6 месяцев",Status.NEW);
         manager.createOrUpdateSubTask(null,"Заниматься спортом", "бег 3 р/нед по 2 км", Status.NEW, 6);
-/*        manager.getListAllTasks();
+ /*       manager.getListAllTasks();
         System.out.println("***********");
         manager.createOrUpdateTask(2,"Сделать защелку", "На дверь калитки", Status.DONE);
         manager.createOrUpdateSubTask(4,"Вырыть фунтамент", "глубина 1,8 м", Status.DONE, 3);

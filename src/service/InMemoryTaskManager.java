@@ -9,13 +9,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class InMemoryTaskManager implements TaskManager, HistoryManager {
+public class InMemoryTaskManager implements TaskManager {
 
+    HistoryManager historyManager = Managers.getDefaultHistory();
     Integer id = 0;
     HashMap<Integer, Task> dataTask = new HashMap<>();
     HashMap<Integer, Epic> dataEpic = new HashMap<>();
     HashMap<Integer, SubTask> dataSubTask = new HashMap<>();
-    List<Task> historyOfView = new ArrayList<>();
+
 
     @Override
     public ArrayList<Task> getListAllTasks() {
@@ -53,30 +54,19 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
         Task task;
         if (dataTask.containsKey(idEnter)) {
             task = dataTask.get(idEnter);
-            add(task);
+            historyManager.add(task);
         } else if (dataEpic.containsKey(idEnter)) {
             task = dataEpic.get(idEnter);
-            add(task);
+            historyManager.add(task);
         } else if (dataSubTask.containsKey(idEnter)) {
             task = dataSubTask.get(idEnter);
-            add(task);
+            historyManager.add(task);
         } else {
             System.out.println("Такого ID нет");
             task = null;
         }
         return task;
     }
-
-    @Override
-    public void add(Task task) {
-        if (historyOfView.size() < 10) {
-            historyOfView.add(task);
-        } else {
-            historyOfView.remove(0);
-            historyOfView.add(task);
-        }
-    }
-
 
     @Override
     public void deleteTaskById(Integer idEnter) {
@@ -223,11 +213,7 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
     }
     @Override
     public List<Task> getHistory() {
-        System.out.println("История просмотров:");
-        for (int i = 0; i < historyOfView.size(); i++) {
-            System.out.println((i+1) + ". " + historyOfView.get (i));
-        }
-        return historyOfView;
+        return historyManager.getHistory();
     }
 
 
