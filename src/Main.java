@@ -1,11 +1,13 @@
 import model.Status;
-import service.Manager;
+import service.InMemoryTaskManager;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        Manager manager = new Manager();
+
+
+        InMemoryTaskManager manager = new InMemoryTaskManager();
 
         //Если Вы создаете новую задачу, в поле id введите null.
         //Если Вы обновляете задачу, в поле id введите соответсвующий номер.
@@ -20,7 +22,7 @@ public class Main {
         manager.createOrUpdateSubTask(null,"Навязать арматуру", "диаметр 10мм, шаг 200мм", Status.DONE, 3);
         manager.createOrUpdateEpic(null,"Сбросить 10 кг", "за 6 месяцев",Status.NEW);
         manager.createOrUpdateSubTask(null,"Заниматься спортом", "бег 3 р/нед по 2 км", Status.NEW, 6);
-        manager.getListAllTasks();
+/*        manager.getListAllTasks();
         System.out.println("***********");
         manager.createOrUpdateTask(2,"Сделать защелку", "На дверь калитки", Status.DONE);
         manager.createOrUpdateSubTask(4,"Вырыть фунтамент", "глубина 1,8 м", Status.DONE, 3);
@@ -29,6 +31,19 @@ public class Main {
         manager.deleteTaskById(1);
         manager.deleteTaskById(4);
         manager.getListAllTasks();
-        System.out.println("***********");
+        System.out.println("***********");*/
+        manager.getTaskById(1);
+        manager.getTaskById(2);
+        manager.getTaskById(3);
+        manager.getTaskById(4);
+        manager.getTaskById(5);
+        manager.getTaskById(6);
+        manager.getTaskById(7);
+        manager.getTaskById(1);
+        manager.getTaskById(2);
+        manager.getTaskById(3);
+        manager.getTaskById(4);
+        manager.getTaskById(5);
+        manager.getHistory();
     }
 }
