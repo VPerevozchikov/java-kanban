@@ -54,17 +54,15 @@ public class InMemoryTaskManager implements TaskManager {
         Task task;
         if (dataTask.containsKey(idEnter)) {
             task = dataTask.get(idEnter);
-            historyManager.add(task);
         } else if (dataEpic.containsKey(idEnter)) {
             task = dataEpic.get(idEnter);
-            historyManager.add(task);
         } else if (dataSubTask.containsKey(idEnter)) {
             task = dataSubTask.get(idEnter);
-            historyManager.add(task);
         } else {
-            System.out.println("Такого ID нет");
+            System.out.println("Запрашиваемый ID " + idEnter + " не найден.");
             task = null;
         }
+        historyManager.add(task);
         return task;
     }
 
@@ -97,46 +95,43 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createOrUpdateTask(Integer idEnter, String name, String description, Status status) {
-        if (dataTask.containsKey(idEnter)) {
-            dataTask.remove(idEnter);
-            Task newTask = new Task(idEnter, name, description, status);
-            dataTask.put(idEnter, newTask);
-        } else if (idEnter == null){
-            id++;
-            Task newTask = new Task(id, name, description, status);
-            newTask.setId(id);
-            dataTask.put(id, newTask);
-        } else {
-            System.out.println("Задача " + name + " не создана и не обновлена. Введенный id " + idEnter
-                    + " не существует.");
-        }
+
+            if (idEnter != null) {
+                if (!dataTask.containsKey(idEnter)) {
+                    System.out.println("Задача " + name + " не создана и не обновлена. Введенный id " + idEnter
+                            + " не существует.");
+                    return;
+                }
+            } else {
+                idEnter = ++id;
+            }
+            dataTask.put(idEnter, new Task(idEnter, name, description, status));
     }
 
     @Override
     public void createOrUpdateEpic(Integer idEnter, String name, String description, Status status) {
-        if (dataEpic.containsKey(idEnter)) {
-            Epic currentEpic = dataEpic.get(idEnter);
-            if (currentEpic.getStatus().equals(status)) {
-                dataEpic.remove(idEnter);
-                Epic newEpic = new Epic(idEnter, name, description, status);
-                dataEpic.put(idEnter, newEpic);
+
+        if (idEnter != null) {
+            if (!dataEpic.containsKey(idEnter)) {
+                System.out.println("Задача " + name + " не создана и не обновлена. Введенный id " + idEnter
+                        + " не существует.");
+                return;
             } else {
-                System.out.println("Обновление эпика зависит от статуса Подзадач. Обновление вручную невозможно.");
-            }
-        } else if (idEnter == null){
-            if (status == Status.NEW) {
-                id++;
-                Epic newEpic = new Epic(id, name, description, status);
-                dataEpic.put(id, newEpic);
-            } else {
-                System.out.println("Для нового эпика введите статус NEW");
+                Epic currentEpic = dataEpic.get(idEnter);
+                if (!currentEpic.getStatus().equals(status)) {
+                    System.out.println("Обновление эпика зависит от статуса Подзадач. Обновление вручную невозможно.");
+                    return;
+                }
             }
         } else {
-            System.out.println("Задача " + name + " не создана и не обновлена. Введенный id " + idEnter
-                    + " не существует.");
+            if (status != Status.NEW) {
+                System.out.println("Для нового эпика введите статус NEW");
+                return;
+            }
+            idEnter = ++id;
         }
+        dataEpic.put(idEnter, new Epic(idEnter, name, description, status));
     }
-
 
     public void checkStatusEpic (Epic epicForCheck) {
         HashMap<Integer, SubTask> dubMapOfSubTasks = epicForCheck.getMapOfSubTasks();
@@ -165,42 +160,32 @@ public class InMemoryTaskManager implements TaskManager {
             epicForCheck.setStatus(Status.DONE);
         }
     }
+
     @Override
     public void createOrUpdateSubTask(Integer idEnter, String name, String description, Status status
             , Integer idOfEpic) {
-        if (dataEpic.containsKey(idOfEpic)) {
-            if (dataSubTask.containsKey(idEnter)) {
-                Epic dubEpic = dataEpic.get(idOfEpic);
-                HashMap<Integer, SubTask> dubMapOfSubTasks = dubEpic.getMapOfSubTasks();
-                dubMapOfSubTasks.remove(idEnter);
-                dataSubTask.remove(idEnter);
-                SubTask updateSubTask = new SubTask(idEnter, name, description, status, idOfEpic);
-                dataSubTask.put(idEnter, updateSubTask);
-                dubMapOfSubTasks.put(idEnter, updateSubTask);
-                dubEpic.setMapOfSubTasks(dubMapOfSubTasks);
 
-                checkStatusEpic(dubEpic);
-
-            } else if (idEnter == null) {
-                id++;
-                SubTask newSubTask = new SubTask(id, name, description, status, idOfEpic);
-                newSubTask.setId(id);
-                dataSubTask.put(id, newSubTask);
-                Epic dubEpic = dataEpic.get(idOfEpic);
-                HashMap<Integer, SubTask> dubMapOfSubTasks = dubEpic.getMapOfSubTasks();
-                dubMapOfSubTasks.put(id, newSubTask);
-                dubEpic.setMapOfSubTasks(dubMapOfSubTasks);
-
-                checkStatusEpic(dubEpic);
-
-            } else {
-                System.out.println("Задача " + name + " не создана и не обновлена. Введенный id " + idEnter
-                        + " не существует.");
-            }
-        } else {
+        if (!dataEpic.containsKey(idOfEpic)) {
             System.out.println("Задача " + name + " не создана и не обновлена. Введенный idOfEpic " + idOfEpic
                     + " не принадлежит типу Эпик.");
+            return;
         }
+
+        if (idEnter != null) {
+            if (!dataSubTask.containsKey(idEnter)) {
+                System.out.println("Задача " + name + " не создана и не обновлена. Введенный id " + idEnter
+                        + " не существует.");
+                return;
+            }
+        } else {
+            idEnter = ++id;
+        }
+        dataSubTask.put(idEnter, new SubTask(idEnter, name, description, status, idOfEpic));
+        Epic dubEpic = dataEpic.get(idOfEpic);
+        HashMap<Integer, SubTask> dubMapOfSubTasks = dubEpic.getMapOfSubTasks();
+        dubMapOfSubTasks.put(idEnter, new SubTask(idEnter, name, description, status, idOfEpic));
+
+        checkStatusEpic(dubEpic);
     }
 
     @Override
