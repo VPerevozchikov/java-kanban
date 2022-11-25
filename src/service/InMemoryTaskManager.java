@@ -70,14 +70,17 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteTaskById(Integer idEnter) {
         if (dataTask.containsKey(idEnter)) {
             dataTask.remove(idEnter);
+            historyManager.remove(idEnter); //
         } else if (dataEpic.containsKey(idEnter)) {
             Epic dubEpic = dataEpic.get(idEnter);
             HashMap<Integer, SubTask> dubMapOfSubTasks = dubEpic.getMapOfSubTasks();
             for (SubTask subTask : dubMapOfSubTasks.values()) {
                 int idOfSubTaskForRemove = subTask.getId();
                 dataSubTask.remove(idOfSubTaskForRemove);
+                historyManager.remove(idOfSubTaskForRemove);
             }
             dataEpic.remove(idEnter);
+            historyManager.remove(idEnter);
         } else if (dataSubTask.containsKey(idEnter)) {
             SubTask dubSubTask = dataSubTask.get(idEnter);
             int idOfEpic = dubSubTask.getIdOfEpic();
@@ -86,6 +89,7 @@ public class InMemoryTaskManager implements TaskManager {
             dubMapOfSubTasks.remove(idEnter);
 
             dataSubTask.remove(idEnter);
+            historyManager.remove(idEnter);
 
             checkStatusEpic(dubEpic);
         } else {
