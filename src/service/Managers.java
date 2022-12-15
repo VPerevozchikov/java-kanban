@@ -7,7 +7,7 @@ public class Managers {
     }
 
     public static TaskManager getFileBackedTaskManager() {
-        TaskManager fileBackTaskManager = new FileBackedTaskManager("ListAndHistoryOfTasks.txt");
+        TaskManager fileBackTaskManager = new FileBackedTaskManager("resources/ListAndHistoryOfTasks.txt");
         return fileBackTaskManager;
     }
 

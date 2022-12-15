@@ -14,7 +14,7 @@ import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    String filename;
+    private String filename;
 
     public FileBackedTaskManager(String filename) {
         this.filename = filename;
@@ -38,8 +38,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         System.out.println("\n***** ПРОВЕРКА ФАКТА ВОССТАНОВЛЕНИЯ МЕНЕДЖЕРА ИЗ ФАЙЛА *****\n");
 
-        FileBackedTaskManager doubleFBTM = loadFromFile(new File("ListAndHistoryOfTasks.txt"));
-        doubleFBTM.load("ListAndHistoryOfTasks.txt");
+        FileBackedTaskManager doubleFBTM = loadFromFile(new File("resources/ListAndHistoryOfTasks.txt"));
+        doubleFBTM.load("resources/ListAndHistoryOfTasks.txt");
         doubleFBTM.getListAllTasks();
         doubleFBTM.getHistoryWithPrint();
     }
@@ -116,25 +116,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             } else {
                 throw new ManagerSaveException("Файл отсутствует");
             }
-        } catch (IOException | ManagerSaveException e) {
-            System.out.println(e.getMessage());
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка при попытки сохранить данные в файл");
         }
     }
 
     public void load(String filename) {
 
 //восстановление задач
-        List<String[]> tasksFromTxt = new ArrayList<>();
-        try (FileReader reader = new FileReader(filename, StandardCharsets.UTF_8)) {
-            BufferedReader br = new BufferedReader(reader);
-            while (br.ready()) {
-                String line = br.readLine();
-                String[] dataOfTask = line.split(",");
-                tasksFromTxt.add(dataOfTask);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        List<String[]> tasksFromTxt = readFromFile(filename);
 
         tasksFromTxt.remove(0);
         tasksFromTxt.remove(tasksFromTxt.size() - 1);
@@ -155,23 +145,30 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
 
 //восстановление истории просмотров
-        List<String[]> historyFromTxt = new ArrayList<>();
-        try (FileReader reader = new FileReader(filename, StandardCharsets.UTF_8)) {
-            BufferedReader br = new BufferedReader(reader);
-            while (br.ready()) {
-                String line = br.readLine();
-                String[] dataOfTask = line.split(",");
-                historyFromTxt.add(dataOfTask);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        List<String[]> historyFromTxt = readFromFile(filename);
 
         String[] history = historyFromTxt.get(historyFromTxt.size() - 1);
         for (String number : history) {
             getTaskById(Integer.parseInt(number));
         }
     }
+
+    public List<String[]> readFromFile (String filename) {
+        List<String[]> dataFromTxt = new ArrayList<>();
+        try (FileReader reader = new FileReader(filename, StandardCharsets.UTF_8)) {
+            BufferedReader br = new BufferedReader(reader);
+            while (br.ready()) {
+                String line = br.readLine();
+                String[] dataOfTask = line.split(",");
+                dataFromTxt.add(dataOfTask);
+            }
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка при попытке считать данные из файла");
+        }
+        return dataFromTxt;
+    }
+
+
 
     public Status checkStatus(String statusFromTxt) {
         Status status = null;
