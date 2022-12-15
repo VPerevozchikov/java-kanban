@@ -1,0 +1,6 @@
+id,type,name,status,description,epic
+1,TASK,Сходить в магазин,NEW,Молоко 2л
+2,EPIC,Построить дом,IN_PROGRESS,Двухэтажный деревянный
+3,SUBTASK,Вырыть фунтамент,IN_PROGRESS,глубина 1.8 м,2
+
+1,2,3

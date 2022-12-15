@@ -6,6 +6,11 @@ public class Managers {
         return taskManager;
     }
 
+    public static TaskManager getFileBackedTaskManager() {
+        TaskManager fileBackTaskManager = new FileBackedTaskManager("ListAndHistoryOfTasks.txt");
+        return fileBackTaskManager;
+    }
+
 
     public static HistoryManager getDefaultHistory(){
         HistoryManager historyManager = new InMemoryHistoryManager();

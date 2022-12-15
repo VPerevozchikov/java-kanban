@@ -2,9 +2,11 @@ import model.Status;
 import service.Managers;
 import service.TaskManager;
 
+import java.io.IOException;
+
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         TaskManager taskManager = Managers.getDefault();
 
@@ -32,7 +34,7 @@ public class Main {
         taskManager.getHistory();
         taskManager.deleteTaskById(5);
         taskManager.getHistory();
-        taskManager.deleteTaskById(1);
+        taskManager.deleteAllTasks();
         taskManager.getHistory();
     }
 }

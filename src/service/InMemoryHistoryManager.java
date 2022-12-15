@@ -9,7 +9,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     HashMap<Integer, Node> nodeMap = new HashMap<>();
     private Node head;
     private Node tail;
-  //  private int size = 0;
+
 
     @Override
     public void add(Task task) {
@@ -22,17 +22,29 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public List<Task> getHistory() {
         ArrayList<Task> listHistory = getTasks();
+/*        System.out.println("История просмотров: ");
+        for (int i = 0; i < listHistory.size(); i++){
+            System.out.println((i + 1) + ". " + listHistory.get(i));
+        }*/
+        return listHistory;
+    }
+
+    @Override
+    public void getHistoryWithPrint() {
+        ArrayList<Task> listHistory = getTasks();
         System.out.println("История просмотров: ");
         for (int i = 0; i < listHistory.size(); i++){
             System.out.println((i + 1) + ". " + listHistory.get(i));
         }
-        return listHistory;
     }
+
 
     @Override
     public void remove(int id) {
         removeNode(nodeMap.get(id));
     }
+
+
     private void linkLast(Task task) {
         Node oldTail = tail;
         Node newNode = new Node(oldTail, task, null);
@@ -43,7 +55,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             oldTail.next = newNode;
         }
         nodeMap.put(task.getId(), newNode);
-//        size++;
+
     }
 
     private ArrayList<Task> getTasks() {
@@ -73,7 +85,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             node.next = null;
         }
         node.task = null;
- //       size--;
     }
 
     class Node {

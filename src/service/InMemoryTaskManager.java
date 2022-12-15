@@ -5,6 +5,7 @@ import model.Epic;
 import model.SubTask;
 import model.Status;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,9 +45,22 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
+        for (int idNumber : dataTask.keySet()) {
+            historyManager.remove(idNumber);
+        }
+
+        for (int idNumber : dataSubTask.keySet()) {
+            historyManager.remove(idNumber);
+        }
+
+        for (int idNumber : dataEpic.keySet()) {
+            historyManager.remove(idNumber);
+        }
+
         dataTask.clear();
         dataSubTask.clear();
         dataEpic.clear();
+
     }
 
     @Override
@@ -205,6 +219,10 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
+
+    public void getHistoryWithPrint() {
+        historyManager.getHistoryWithPrint();
+    }
 
 }
 

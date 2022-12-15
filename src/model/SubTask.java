@@ -23,4 +23,13 @@ public class SubTask extends Task {
                 ", idOfEpic ='" + idOfEpic + '\'' + "}";
         return result;
     }
+    public String subTaskToString(SubTask subTask) {
+
+        String result = subTask.id + "," + TaskType.SUBTASK +
+                "," + subTask.name + "," +
+                subTask.status + "," + subTask.description + "," +
+                subTask.idOfEpic + "\n";
+
+        return result;
+    }
 }

@@ -3,10 +3,18 @@ package model;
 import java.util.Objects;
 
 public class Task {
+
+
     String name;
+
+    public String getDescription() {
+        return description;
+    }
+
     String description;
     Status status;
     Integer id;
+
 
     public Task(Integer id, String name, String description, Status status) {
         this.id = id;
@@ -21,6 +29,9 @@ public class Task {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+    public String getName() {
+        return name;
     }
 
     public Status getStatus() {
@@ -57,6 +68,17 @@ public class Task {
 
         return result;
     }
+
+    public String taskToString(Task task) {
+
+        String result = task.id + "," + TaskType.TASK +
+                "," + task.name + "," +
+                task.status + "," + task.description + "\n";
+
+        return result;
+    }
+
+
 
 }
 
