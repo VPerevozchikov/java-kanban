@@ -39,50 +39,14 @@ public class Main {
                 LocalDateTime.of(2200, 1, 1, 0, 0, 0, 0).plusMinutes(1000),
                 1);
 
- /*       Task task1 = taskManager.createOrUpdateTask(null,"Сходить в парикмахерскую", "Подстричься",
+        Task task1 = taskManager.createOrUpdateTask(null,"Сходить в парикмахерскую", "Подстричься",
                 Status.NEW,
                 90L,
                 LocalDateTime.of(2010, 1, 1, 0, 0, 0, 0).plusMinutes(100));
 
-        Task task2 = taskManager.createOrUpdateTask(null,"Сходить в магазин", "Яйца и молоко",
-                Status.NEW,
-                40L,
-                LocalDateTime.of(2010, 1, 1, 0, 0, 0, 0).plusMinutes(200));
 
-        Task task3 = taskManager.createOrUpdateTask(null,"TEST", "TEST",
-                Status.NEW,
-                5L,
-                LocalDateTime.of(2010, 1, 1, 0, 0, 0, 0).plusMinutes(10));
-
-        Task task4 = taskManager.createOrUpdateTask(null,"TEST_DUB", "TEST_DUB",
-                Status.NEW,
-                5L,
-                LocalDateTime.of(2010, 1, 1, 0, 0, 0, 0).plusMinutes(10));*/
-
-/*        Task task = taskManager.createOrUpdateTask(null, "Test TASK",
-                "Test TASK description", NEW, 50L,
-                LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0));
-        Task task2 = taskManager.createOrUpdateTask(1, "Test TASK_2",
-                "Test TASK_2 description", IN_PROGRESS, 50L,
-                LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0));*/
-
-        System.out.println("\n ******* ПЕЧАТЬ 1 ******** \n");
         taskManager.getListAllTasks();
         taskManager.printAllTasksAndSubTasksSortedByStartTime();
-/*
 
-        taskManager.getTaskById(1);
-        taskManager.getTaskById(2);
-        taskManager.getTaskById(3);
-        taskManager.getTaskById(4);
-        taskManager.getTaskById(5);
-        taskManager.getTaskById(3);
-        taskManager.getTaskById(2);
-        taskManager.getTaskById(1);
-        taskManager.getTaskById(5);
-        taskManager.getTaskById(4);
-        taskManager.getHistoryWithPrint();
-        taskManager.deleteTaskById(5);
-        taskManager.getHistoryWithPrint();*/
     }
 }
