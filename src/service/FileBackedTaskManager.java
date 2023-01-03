@@ -9,6 +9,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +26,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         TaskManager taskManager = Managers.getFileBackedTaskManager();
 
         taskManager.createOrUpdateTask(null, "Сходить в магазин",
-                "Молоко 2л", Status.NEW);
+                "Молоко 2л",  Status.NEW, 60L,
+                LocalDateTime.of(2000, 1, 1, 0, 0, 0, 0).plusMinutes(10));
         taskManager.createOrUpdateEpic(null, "Построить дом",
                 "Двухэтажный деревянный", Status.NEW);
-        taskManager.createOrUpdateSubTask(null, "Вырыть фунтамент",
-                "глубина 1.8 м", Status.IN_PROGRESS, 2);
+        taskManager.createOrUpdateSubTask(null, "Вырыть фундамент",
+                "глубина 1.8 м", Status.IN_PROGRESS, 6000L,
+                LocalDateTime.of(2000, 1, 1, 0, 0, 0, 0).plusMinutes(100), 2);
         taskManager.getTaskById(1);
         taskManager.getTaskById(2);
         taskManager.getTaskById(3);
@@ -45,22 +48,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void createOrUpdateTask(Integer idEnter, String name, String description, Status status) {
-        super.createOrUpdateTask(idEnter, name, description, status);
+    public Task createOrUpdateTask(Integer idEnter, String name, String description, Status status, Long duration, LocalDateTime startTime) {
+        Task task = super.createOrUpdateTask(idEnter, name, description, status, duration, startTime);
         save();
+        return task;
     }
 
     @Override
-    public void createOrUpdateEpic(Integer idEnter, String name, String description, Status status) {
-        super.createOrUpdateEpic(idEnter, name, description, status);
+    public Epic createOrUpdateEpic(Integer idEnter, String name, String description, Status status) {
+        Epic epic = super.createOrUpdateEpic(idEnter, name, description, status);
         save();
+        return epic;
     }
 
     @Override
-    public void createOrUpdateSubTask(Integer idEnter, String name, String description, Status status
-            , Integer idOfEpic) {
-        super.createOrUpdateSubTask(idEnter, name, description, status, idOfEpic);
+    public SubTask createOrUpdateSubTask(Integer idEnter, String name, String description, Status status
+            , Long duration, LocalDateTime startTime, Integer idOfEpic) {
+        SubTask subTask = super.createOrUpdateSubTask(idEnter, name, description, status, duration, startTime, idOfEpic);
         save();
+        return subTask;
     }
 
     @Override
@@ -77,16 +83,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public Task getTaskById(Integer idEnter) {
-        super.getTaskById(idEnter);
+        Task task = super.getTaskById(idEnter);
         save();
-        return dataTask.get(idEnter);
+        return task;
     }
 
     public void save() {
         try (Writer fileWriter = new FileWriter(filename)) {
             if (Files.exists(Paths.get(filename))) {
 
-                fileWriter.write("id,type,name,status,description,epic\n");
+                fileWriter.write("id,type,name,status,description,duration,startTime,endTime,epic\n");
                 for (Task task : dataTask.values()) {
                     fileWriter.write(task.taskToString(task));
                 }
@@ -132,15 +138,35 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         for (String[] taskTxt : tasksFromTxt) {
             if (taskTxt[1].equals("TASK")) {
-                dataTask.put(Integer.parseInt(taskTxt[0]), new Task(Integer.parseInt(taskTxt[0]),
-                        taskTxt[2], taskTxt[4], checkStatus(taskTxt[3])));
-            } else if (taskTxt[1].equals("EPIC")) {
-                dataEpic.put(Integer.parseInt(taskTxt[0]), new Epic(Integer.parseInt(taskTxt[0]),
-                        taskTxt[2], taskTxt[4], checkStatus(taskTxt[3])));
-            } else if (taskTxt[1].equals("SUBTASK")) {
-                dataSubTask.put(Integer.parseInt(taskTxt[0]), new SubTask(Integer.parseInt(taskTxt[0]),
+                Task recoveryTask = new Task(Integer.parseInt(taskTxt[0]),
                         taskTxt[2], taskTxt[4], checkStatus(taskTxt[3]),
-                        Integer.parseInt(taskTxt[5])));
+                        Long.parseLong(taskTxt[5]),LocalDateTime.parse(taskTxt[6]));
+                recoveryTask.setEndTime(LocalDateTime.parse(taskTxt[7]));
+
+                dataTask.put(Integer.parseInt(taskTxt[0]), recoveryTask);
+                allTasksAndSubTasksSortedByStartTime.add(recoveryTask);
+
+            } else if (taskTxt[1].equals("EPIC")) {
+                Epic recoveryEpic = new Epic(Integer.parseInt(taskTxt[0]),
+                        taskTxt[2], taskTxt[4], checkStatus(taskTxt[3]));
+                recoveryEpic.setStartTime(LocalDateTime.parse(taskTxt[6]));
+                recoveryEpic.setEndTime(LocalDateTime.parse(taskTxt[7]));
+                recoveryEpic.setDuration(Long.parseLong(taskTxt[5]));
+
+                dataEpic.put(Integer.parseInt(taskTxt[0]), recoveryEpic);
+                allTasksAndSubTasksSortedByStartTime.add(recoveryEpic);
+
+            } else if (taskTxt[1].equals("SUBTASK")) {
+                SubTask recoverySubTask = new SubTask(Integer.parseInt(taskTxt[0]),
+                        taskTxt[2], taskTxt[4], checkStatus(taskTxt[3]),
+                        Long.parseLong(taskTxt[5]),
+                        LocalDateTime.parse(taskTxt[6]),
+                        Integer.parseInt(taskTxt[8]));
+
+                recoverySubTask.setEndTime(LocalDateTime.parse(taskTxt[7]));
+
+                dataSubTask.put(Integer.parseInt(taskTxt[0]), recoverySubTask);
+                allTasksAndSubTasksSortedByStartTime.add(recoverySubTask);
             }
         }
 

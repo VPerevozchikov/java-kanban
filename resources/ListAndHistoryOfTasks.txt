@@ -1,6 +1,6 @@
-id,type,name,status,description,epic
-1,TASK,Сходить в магазин,NEW,Молоко 2л
-2,EPIC,Построить дом,IN_PROGRESS,Двухэтажный деревянный
-3,SUBTASK,Вырыть фунтамент,IN_PROGRESS,глубина 1.8 м,2
+id,type,name,status,description,duration,startTime,endTime,epic
+1,TASK,Сходить в магазин,NEW,Молоко 2л,60,2000-01-01T00:10,2000-01-01T01:10
+2,EPIC,Построить дом,IN_PROGRESS,Двухэтажный деревянный,6000,2000-01-01T01:40,2000-01-05T05:40
+3,SUBTASK,Вырыть фундамент,IN_PROGRESS,глубина 1.8 м,6000,2000-01-01T01:40,2000-01-05T05:40,2
 
 1,2,3
