@@ -7,7 +7,6 @@ import service.TaskManager;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 
 import static model.Status.IN_PROGRESS;
 import static model.Status.NEW;
@@ -43,7 +42,6 @@ public class Main {
                 Status.NEW,
                 90L,
                 LocalDateTime.of(2010, 1, 1, 0, 0, 0, 0).plusMinutes(100));
-
 
         taskManager.getListAllTasks();
         taskManager.printAllTasksAndSubTasksSortedByStartTime();

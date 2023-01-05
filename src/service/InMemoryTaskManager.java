@@ -165,7 +165,6 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public boolean checkTime(TreeSet<Task> mapWithTime, LocalDateTime startTimeForCheck, LocalDateTime endTimeForCheck) {
-
         if (mapWithTime.isEmpty()) {
             return true;
         } else {
@@ -179,22 +178,30 @@ public class InMemoryTaskManager implements TaskManager {
             }
 
             if (mapWithTime.size() == 1) {
-                if (startTimeForCheck.isAfter(taskHead.getStartTime()) && startTimeForCheck.isBefore(taskHead.getEndTime())) {
+                if (startTimeForCheck.isAfter(taskHead.getStartTime())
+                        && startTimeForCheck.isBefore(taskHead.getEndTime())) {
                     return false;
-                } else if (endTimeForCheck.isAfter(taskHead.getStartTime()) && endTimeForCheck.isBefore(taskHead.getEndTime())) {
+                } else if (endTimeForCheck.isAfter(taskHead.getStartTime())
+                        && endTimeForCheck.isBefore(taskHead.getEndTime())) {
                     return false;
-                } else if (startTimeForCheck.isEqual(taskHead.getStartTime()) && endTimeForCheck.isEqual(taskHead.getEndTime())) {
+                } else if (startTimeForCheck.isEqual(taskHead.getStartTime())
+                        && endTimeForCheck.isEqual(taskHead.getEndTime())) {
                     return false;
                 } else {
                     return true;
                 }
             } else {
                 for (Task task : mapWithTime) {
-                    return startTimeForCheck.isAfter(task.getEndTime()) && endTimeForCheck.isBefore(mapWithTime.higher(task).getStartTime());
+                    if (startTimeForCheck.isEqual(task.getStartTime()) && endTimeForCheck.isEqual(task.getEndTime())) {
+                        return false;
+                    } else if (startTimeForCheck.isAfter(task.getEndTime())
+                                && endTimeForCheck.isBefore(mapWithTime.higher(task).getStartTime())) {
+                        return true;
+                    }
                 }
             }
         }
-        return true;
+        return false;
     }
     public void checkStatusEpic (Epic epicForCheck) {
         HashMap<Integer, SubTask> dubMapOfSubTasks = epicForCheck.getMapOfSubTasks();

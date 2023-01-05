@@ -18,20 +18,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class InMemoryHistoryManagerTest {
 
- // Не понял почему не работает аннотация @BeforeEach
- /*   @BeforeEach
-    void beforeEach() {
-        HistoryManager historyManager = new InMemoryHistoryManager();
-        TaskManager taskManager = new InMemoryTaskManager();
-   }*/
+    private static HistoryManager historyManager;
+    private static TaskManager taskManager;
 
+    @BeforeEach
+    void beforeEach() {
+        historyManager = new InMemoryHistoryManager();
+        taskManager = new InMemoryTaskManager();
+   }
 
     @Test
     void shouldAddTaskInHistory() throws IOException {
         System.out.println("\n\n***** shouldAddTaskInHistory *****");
 
-        InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
-        TaskManager taskManager = new InMemoryTaskManager();
         Task task = taskManager.createOrUpdateTask(null, "Test TASK",
                 "Test TASK description", NEW, 50L,
                 LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0));
@@ -53,8 +52,6 @@ public class InMemoryHistoryManagerTest {
     void shouldPrintListWhenGetHistoryWithPrint() throws IOException {
         System.out.println("\n\n***** shouldPrintListWhenGetHistoryWithPrint *****");
 
-        InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
-        TaskManager taskManager = new InMemoryTaskManager();
         Task task = taskManager.createOrUpdateTask(null, "Test TASK",
                 "Test TASK description", NEW, 50L,
                 LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0));
@@ -88,8 +85,6 @@ public class InMemoryHistoryManagerTest {
     void shouldNotPutDoubleTaskInHistory() throws IOException {
         System.out.println("\n\n***** shouldNotPutDoubleTaskInHistory *****");
 
-        InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
-        TaskManager taskManager = new InMemoryTaskManager();
         Task task = taskManager.createOrUpdateTask(null, "Test TASK",
                 "Test TASK description", NEW, 50L,
                 LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0));
@@ -125,8 +120,6 @@ public class InMemoryHistoryManagerTest {
     void shouldDeleteTaskFromHistoryWhenDeleteTaskById() throws IOException {
         System.out.println("\n\n***** shouldDeleteTaskFromHistoryWhenDeleteTaskById *****");
 
-        InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
-        TaskManager taskManager = new InMemoryTaskManager();
         Task task = taskManager.createOrUpdateTask(null, "Test TASK",
                 "Test TASK description", NEW, 50L,
                 LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0));
