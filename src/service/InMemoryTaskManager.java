@@ -384,13 +384,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void printMapSubTasksOfEpic (Integer idOfEpic) {
+    public List<Task> getMapSubTasksOfEpic(Integer idOfEpic) {
         Epic newEpic = dataEpic.get(idOfEpic);
+        List<Task> listOfSubTasks = new ArrayList<>();
         HashMap<Integer, SubTask> newMapOfSubTasks = newEpic.getMapOfSubTasks();
-        for (Integer id : newMapOfSubTasks.keySet()) {
-            System.out.println("ID " + id + " " + newMapOfSubTasks.get(id));
-        }
-
+        listOfSubTasks.addAll(newMapOfSubTasks.values());
+        return listOfSubTasks;
     }
 
     @Override

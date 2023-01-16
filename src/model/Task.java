@@ -1,5 +1,7 @@
 package model;
 
+import user.User;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -13,6 +15,8 @@ public class Task {
     Long duration;
     LocalDateTime startTime;
     LocalDateTime endTime;
+
+    protected User user;
 
     public Task(Integer id, String name, String description, Status status) {
         this.id = id;
@@ -28,6 +32,16 @@ public class Task {
         this.status = status;
         this.duration = duration;
         this.startTime = startTime;
+    }
+
+    public Task(Integer id, String name, String description, Status status, Long duration, LocalDateTime startTime, User user) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
+        this.user = user;
     }
 
     public Long getDuration() {
@@ -79,6 +93,14 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

@@ -19,7 +19,7 @@ public interface TaskManager {
     Task createOrUpdateTask(Integer idEnter, String name, String description, Status status, Long duration, LocalDateTime startTime) throws IOException;
     Epic createOrUpdateEpic(Integer idEnter, String name, String description, Status status) throws IOException;
     SubTask createOrUpdateSubTask(Integer idEnter, String name, String description, Status status, Long duration, LocalDateTime startTime, Integer idOfEpic) throws IOException;
-    void printMapSubTasksOfEpic (Integer idOfEpic);
+    List<Task> getMapSubTasksOfEpic (Integer idOfEpic);
     List<Task> getHistory();
 
     void getHistoryWithPrint();

@@ -526,7 +526,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epic = taskManager.createOrUpdateEpic(null, "Test EPIC",
                 "Test EPIC description", NEW);
 
-        taskManager.printMapSubTasksOfEpic(1);
+        taskManager.getMapSubTasksOfEpic(1);
 
         System.out.println("-------------------------------------------------\n\n");
     }
@@ -546,7 +546,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 LocalDateTime.of(2021, 1, 1, 0, 0, 0, 0),
                 1);
 
-        taskManager.printMapSubTasksOfEpic(1);
+        taskManager.getMapSubTasksOfEpic(1);
 
         System.out.println("-------------------------------------------------\n\n");
     }

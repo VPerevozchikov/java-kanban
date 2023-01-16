@@ -1,4 +1,0 @@
-id,type,name,status,description,duration,startTime,endTime,epic
-1,TASK,Test TASK,NEW,Test TASK description,50,2020-01-01T00:00,2020-01-01T00:50
-
-1
