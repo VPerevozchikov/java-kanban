@@ -362,7 +362,32 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("ID " + id + " " + dataSubTask.get(id));
             dataAllTasks.add(dataSubTask.get(id));
         }
+        System.out.println(".................");
         return dataAllTasks;
+    }
+    @Override
+    public List<Task> getListOfTasks() {
+        ArrayList<Task> listOfTasks = new ArrayList<>();
+        for (Integer id : dataTask.keySet()) {
+            listOfTasks.add(dataTask.get(id));
+        }
+        return listOfTasks;
+    }
+    @Override
+    public List<Epic> getListOfEpics() {
+        ArrayList<Epic> listOfEpics = new ArrayList<>();
+        for (Integer id : dataEpic.keySet()) {
+            listOfEpics.add(dataEpic.get(id));
+        }
+        return listOfEpics;
+    }
+    @Override
+    public List<SubTask> getListOfSubTask() {
+        ArrayList<SubTask> listOfSubTasks = new ArrayList<>();
+        for (Integer id : dataSubTask.keySet()) {
+            listOfSubTasks.add(dataSubTask.get(id));
+        }
+        return listOfSubTasks;
     }
 
     @Override
@@ -400,6 +425,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void getHistoryWithPrint() {
         historyManager.getHistoryWithPrint();
+    }
+
+    @Override
+    public void loadAllTasksFromServer(){
     }
 
 }

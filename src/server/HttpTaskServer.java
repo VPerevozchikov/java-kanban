@@ -5,43 +5,21 @@ import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import model.Epic;
-import model.Status;
 import model.SubTask;
 import model.Task;
-import service.FileBackedTaskManager;
 import service.Managers;
 import service.TaskManager;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import static java.lang.System.currentTimeMillis;
-import static java.lang.System.setOut;
 import static java.nio.charset.StandardCharsets.UTF_8;
-
-
-/* **********ВНИМАНИЕ! ВНИМАНИЕ! ВНИМАНИЕ! ***********
-
- На 16.02.23 18:00 выполнена только часть ТЗ, касаемо отработки эндпоинтов.
- Остальную часть работы рассчитываю отправить до 18.03 включительно.
- Понимаю, что времени мало, но стараюсь как могу.
- Прошу прощения за неудобства.
-
- Класс User и все что с ним связано - удалю.
- Я его повторял из Hard вебинара для уяснения порядка работы.
-
- */
-
 
 
 public class HttpTaskServer {
@@ -51,25 +29,26 @@ public class HttpTaskServer {
     private HttpServer server;
     private Gson gson;
 
-    TaskManager fileBackedTaskManager;
+    TaskManager taskManager;
 
-    public HttpTaskServer(TaskManager fileBackedTaskManager) throws IOException {
+    public HttpTaskServer(TaskManager taskManager) throws IOException {
 
-        this.fileBackedTaskManager = fileBackedTaskManager;
+        this.taskManager = taskManager;
 
         gson = Managers.getGson();
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/api/v1/tasks", this::handleTasks);
     }
 
-    private void handleTasks(HttpExchange httpExchange) {
+    private void handleTasks(HttpExchange httpExchange) throws IOException {
         try {
             String path = httpExchange.getRequestURI().getPath();
             String requestMethod = httpExchange.getRequestMethod();
             switch (requestMethod) {
                 case "GET": {
                     if (Pattern.matches("^/api/v1/tasks/task/$", path)) {
-                        String response = gson.toJson(fileBackedTaskManager.getListAllTasks());
+
+                        String response = gson.toJson(taskManager.getListAllTasks());
                         sendSuccessText(httpExchange, response);
                         break;
                     }
@@ -77,9 +56,20 @@ public class HttpTaskServer {
                     if (Pattern.matches("^/api/v1/tasks/task/\\d+$", path)) {
                         String pathId = path.replaceFirst("/api/v1/tasks/task/", "");
                         int id = parsePathId(pathId);
-                        if (id != -1) {
-                            String response = gson.toJson(fileBackedTaskManager.getTaskById(id));
-                            System.out.println(fileBackedTaskManager.getTaskById(id));
+
+                        List<Task> listOfAllTasks = taskManager.getListAllTasks();
+                        boolean isIdContainInList = false;
+
+                        for (Task task : listOfAllTasks) {
+                            if (task.getId().equals(id)) {
+                                isIdContainInList = true;
+                                break;
+                            }
+                        }
+
+                        if (isIdContainInList) {
+                            String response = gson.toJson(taskManager.getTaskById(id));
+                            System.out.println(taskManager.getTaskById(id));
                             sendSuccessText(httpExchange, response);
                         } else {
                             System.out.println("Получен некорректный id " + pathId);
@@ -91,8 +81,19 @@ public class HttpTaskServer {
                     if (Pattern.matches("^/api/v1/tasks/subtask/epic/\\d+$", path)) {
                         String pathId = path.replaceFirst("/api/v1/tasks/subtask/epic/", "");
                         int id = parsePathId(pathId);
-                        if (id != -1) {
-                            String response = gson.toJson(fileBackedTaskManager.getMapSubTasksOfEpic(id));
+
+                        List<Epic> listOfEpics = taskManager.getListOfEpics();
+                        boolean isIdContainInList = false;
+
+                        for (Epic epic : listOfEpics) {
+                            if (epic.getId().equals(id)) {
+                                isIdContainInList = true;
+                                break;
+                            }
+                        }
+
+                        if (isIdContainInList) {
+                            String response = gson.toJson(taskManager.getMapSubTasksOfEpic(id));
                             sendSuccessText(httpExchange, response);
                         } else {
                             System.out.println("Получен некорректный id " + pathId);
@@ -102,13 +103,13 @@ public class HttpTaskServer {
                     }
 
                     if (Pattern.matches("^/api/v1/tasks/history$", path)) {
-                        String response = gson.toJson(fileBackedTaskManager.getHistory());
+                        String response = gson.toJson(taskManager.getHistory());
                         sendSuccessText(httpExchange, response);
                         break;
                     }
 
                     if (Pattern.matches("^/api/v1/tasks/$", path)) {
-                        String response = gson.toJson(fileBackedTaskManager.getAllTasksAndSubTasksSortedByStartTime());
+                        String response = gson.toJson(taskManager.getAllTasksAndSubTasksSortedByStartTime());
                         sendSuccessText(httpExchange, response);
                         break;
                     }
@@ -121,39 +122,44 @@ public class HttpTaskServer {
                     if (Pattern.matches("^/api/v1/tasks/task/$", path)) {
                         InputStream inputStream = httpExchange.getRequestBody();
                         String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
+                        System.out.println();
 
                         Task taskFromRequest = gson.fromJson(body, Task.class);
                         Integer idTaskFromRequest = taskFromRequest.getId();
 
                         try {
                             if (idTaskFromRequest == null) {
-                                int numberOfTasksBeforeAdd = fileBackedTaskManager.getListAllTasks().size();
+                                int numberOfTasksBeforeAdd = taskManager.getListAllTasks().size();
                                 Task newTask = createOrUpdateTaskFromWeb(taskFromRequest);
-                                int numberOfTasksAfterAdd = fileBackedTaskManager.getListAllTasks().size();
+                                int numberOfTasksAfterAdd = taskManager.getListAllTasks().size();
                                 if (numberOfTasksAfterAdd > numberOfTasksBeforeAdd) {
                                     sendSuccessText(httpExchange, "Задача Task с id " + newTask.getId() + " создана");
                                 } else {
                                     sendFailText(httpExchange, "Задача не создана. Ошибка в введенных данных.");
                                 }
                             } else {
-                                List<Task> listOfAllTasks = fileBackedTaskManager.getListAllTasks();
+                                List<Task> listOfTasks = taskManager.getListOfTasks();
                                 boolean isIdContainInList = false;
 
-                                for (Task task : listOfAllTasks) {
+                                for (Task task : listOfTasks) {
                                     if (task.getId().equals(idTaskFromRequest)) {
                                         isIdContainInList = true;
                                         break;
                                     }
                                 }
                                 if (isIdContainInList) {
-                                    Task taskBeforeUpdate = fileBackedTaskManager.getTaskById(idTaskFromRequest);
+                                    Task taskBeforeUpdate = taskManager.getTaskById(idTaskFromRequest);
                                     Task updateTask = createOrUpdateTaskFromWeb(taskFromRequest);
-                                    if (!taskBeforeUpdate.getName().equals(updateTask.getName())
-                                            || !taskBeforeUpdate.getDescription().equals(updateTask.getDescription())
-                                            || !taskBeforeUpdate.getStatus().equals(updateTask.getStatus())
-                                            || !taskBeforeUpdate.getDuration().equals(updateTask.getDuration())
-                                            || !taskBeforeUpdate.getStartTime().isEqual(updateTask.getStartTime())) {
-                                        sendSuccessText(httpExchange, "Задача Task с id " + idTaskFromRequest + " обновлена");
+                                    if (updateTask != null) {
+                                        if (!taskBeforeUpdate.getName().equals(updateTask.getName())
+                                                || !taskBeforeUpdate.getDescription().equals(updateTask.getDescription())
+                                                || !taskBeforeUpdate.getStatus().equals(updateTask.getStatus())
+                                                || !taskBeforeUpdate.getDuration().equals(updateTask.getDuration())
+                                                || !taskBeforeUpdate.getStartTime().isEqual(updateTask.getStartTime())) {
+                                            sendSuccessText(httpExchange, "Задача Task с id " + idTaskFromRequest + " обновлена");
+                                        } else {
+                                            sendFailText(httpExchange, "Задача не обновлена. Ошибка в введенных данных.");
+                                        }
                                     } else {
                                         sendFailText(httpExchange, "Задача не обновлена. Ошибка в введенных данных.");
                                     }
@@ -169,7 +175,6 @@ public class HttpTaskServer {
                         }
                     }
 
-
                     if (Pattern.matches("^/api/v1/tasks/subtask/$", path)) {
                         InputStream inputStream = httpExchange.getRequestBody();
                         String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
@@ -179,33 +184,37 @@ public class HttpTaskServer {
 
                         try {
                             if (idSubTaskFromRequest == null) {
-                                int numberOfTasksBeforeAdd = fileBackedTaskManager.getListAllTasks().size();
+                                int numberOfTasksBeforeAdd = taskManager.getListAllTasks().size();
                                 SubTask newSubTask = createOrUpdateSubTaskFromWeb(subTaskFromRequest);
-                                int numberOfTasksAfterAdd = fileBackedTaskManager.getListAllTasks().size();
+                                int numberOfTasksAfterAdd = taskManager.getListAllTasks().size();
                                 if (numberOfTasksAfterAdd > numberOfTasksBeforeAdd) {
                                     sendSuccessText(httpExchange, "Задача SubTask с id " + newSubTask.getId() + " создана");
                                 } else {
                                     sendFailText(httpExchange, "Задача не создана. Ошибка в введенных данных.");
                                 }
                             } else {
-                                List<Task> listOfAllTasks = fileBackedTaskManager.getListAllTasks();
+                                List<SubTask> listOfSubTasks = taskManager.getListOfSubTask();
                                 boolean isIdContainInList = false;
 
-                                for (Task task : listOfAllTasks) {
-                                    if (task.getId().equals(idSubTaskFromRequest)) {
+                                for (SubTask subTask : listOfSubTasks) {
+                                    if (subTask.getId().equals(idSubTaskFromRequest)) {
                                         isIdContainInList = true;
                                         break;
                                     }
                                 }
                                 if (isIdContainInList) {
-                                    SubTask subTaskBeforeUpdate = (SubTask) fileBackedTaskManager.getTaskById(idSubTaskFromRequest);
+                                    SubTask subTaskBeforeUpdate = (SubTask) taskManager.getTaskById(idSubTaskFromRequest);
                                     SubTask updateSubTask = createOrUpdateSubTaskFromWeb(subTaskFromRequest);
-                                    if (!subTaskBeforeUpdate.getName().equals(updateSubTask.getName())
-                                            || !subTaskBeforeUpdate.getDescription().equals(updateSubTask.getDescription())
-                                            || !subTaskBeforeUpdate.getStatus().equals(updateSubTask.getStatus())
-                                            || !subTaskBeforeUpdate.getDuration().equals(updateSubTask.getDuration())
-                                            || !subTaskBeforeUpdate.getStartTime().isEqual(updateSubTask.getStartTime())) {
-                                        sendSuccessText(httpExchange, "Задача SubTask с id " + idSubTaskFromRequest + " обновлена");
+                                    if (updateSubTask != null) {
+                                        if (!subTaskBeforeUpdate.getName().equals(updateSubTask.getName())
+                                                || !subTaskBeforeUpdate.getDescription().equals(updateSubTask.getDescription())
+                                                || !subTaskBeforeUpdate.getStatus().equals(updateSubTask.getStatus())
+                                                || !subTaskBeforeUpdate.getDuration().equals(updateSubTask.getDuration())
+                                                || !subTaskBeforeUpdate.getStartTime().isEqual(updateSubTask.getStartTime())) {
+                                            sendSuccessText(httpExchange, "Задача SubTask с id " + idSubTaskFromRequest + " обновлена");
+                                        } else {
+                                            sendFailText(httpExchange, "Задача не обновлена. Ошибка в введенных данных.");
+                                        }
                                     } else {
                                         sendFailText(httpExchange, "Задача не обновлена. Ошибка в введенных данных.");
                                     }
@@ -230,31 +239,35 @@ public class HttpTaskServer {
 
                         try {
                             if (idEpicFromRequest == null) {
-                                int numberOfTasksBeforeAdd = fileBackedTaskManager.getListAllTasks().size();
+                                int numberOfTasksBeforeAdd = taskManager.getListAllTasks().size();
                                 Epic newEpic = createOrUpdateEpicFromWeb(epicFromRequest);
-                                int numberOfTasksAfterAdd = fileBackedTaskManager.getListAllTasks().size();
+                                int numberOfTasksAfterAdd = taskManager.getListAllTasks().size();
                                 if (numberOfTasksAfterAdd > numberOfTasksBeforeAdd) {
                                     sendSuccessText(httpExchange, "Задача Epic с id " + newEpic.getId() + " создана");
                                 } else {
                                     sendFailText(httpExchange, "Задача не создана. Ошибка в введенных данных.");
                                 }
                             } else {
-                                List<Task> listOfAllTasks = fileBackedTaskManager.getListAllTasks();
+                                List<Epic> listOfAllEpics = taskManager.getListOfEpics();
                                 boolean isIdContainInList = false;
 
-                                for (Task task : listOfAllTasks) {
-                                    if (task.getId().equals(idEpicFromRequest)) {
+                                for (Epic epic : listOfAllEpics) {
+                                    if (epic.getId().equals(idEpicFromRequest)) {
                                         isIdContainInList = true;
                                         break;
                                     }
                                 }
                                 if (isIdContainInList) {
-                                    Epic epicBeforeUpdate = (Epic) fileBackedTaskManager.getTaskById(idEpicFromRequest);
+                                    Epic epicBeforeUpdate = (Epic) taskManager.getTaskById(idEpicFromRequest);
                                     Epic updateEpic = createOrUpdateEpicFromWeb(epicFromRequest);
-                                    if (!epicBeforeUpdate.getName().equals(updateEpic.getName())
-                                            || !epicBeforeUpdate.getDescription().equals(updateEpic.getDescription())
-                                            || !epicBeforeUpdate.getStatus().equals(updateEpic.getStatus())) {
-                                        sendSuccessText(httpExchange, "Задача Epic с id " + idEpicFromRequest + " обновлена");
+                                    if (updateEpic != null) {
+                                        if (!epicBeforeUpdate.getName().equals(updateEpic.getName())
+                                                || !epicBeforeUpdate.getDescription().equals(updateEpic.getDescription())
+                                                || !epicBeforeUpdate.getStatus().equals(updateEpic.getStatus())) {
+                                            sendSuccessText(httpExchange, "Задача Epic с id " + idEpicFromRequest + " обновлена");
+                                        } else {
+                                            sendFailText(httpExchange, "Задача не обновлена. Ошибка в введенных данных.");
+                                        }
                                     } else {
                                         sendFailText(httpExchange, "Задача не обновлена. Ошибка в введенных данных.");
                                     }
@@ -275,8 +288,19 @@ public class HttpTaskServer {
                     if (Pattern.matches("^/api/v1/tasks/task/\\d+$", path)) {
                         String pathId = path.replaceFirst("/api/v1/tasks/task/", "");
                         int id = parsePathId(pathId);
-                        if (id != -1) {
-                            fileBackedTaskManager.deleteTaskById(id);
+
+                        List<Task> listOfAllTasks = taskManager.getListAllTasks();
+                        boolean isIdContainInList = false;
+
+                        for (Task task : listOfAllTasks) {
+                            if (task.getId().equals(id)) {
+                                isIdContainInList = true;
+                                break;
+                            }
+                        }
+
+                        if (isIdContainInList) {
+                            taskManager.deleteTaskById(id);
                             System.out.println("Удалили задачу по id " + id);
                             httpExchange.sendResponseHeaders(200, 0);
                         } else {
@@ -287,7 +311,7 @@ public class HttpTaskServer {
                     }
 
                     if (Pattern.matches("^/api/v1/tasks/task/$", path)) {
-                            fileBackedTaskManager.deleteAllTasks();
+                            taskManager.deleteAllTasks();
                             httpExchange.sendResponseHeaders(200, 0);
                         break;
                     }
@@ -301,6 +325,8 @@ public class HttpTaskServer {
             }
         } catch (Exception exception) {
             exception.printStackTrace();
+            sendFailText(httpExchange, "Ошибка в запросе.");
+
         } finally {
             httpExchange.close();
         }
@@ -315,7 +341,7 @@ public class HttpTaskServer {
     }
 
     public void start() {
-        System.out.println("Запускаем сервер на порту " + PORT);
+        System.out.println("Запускаем HttpTaskServer сервер на порту " + PORT);
         server.start();
     }
 
@@ -343,7 +369,7 @@ public class HttpTaskServer {
     }
 
     public Task createOrUpdateTaskFromWeb (Task task) throws IOException {
-        Task newTask = fileBackedTaskManager.createOrUpdateTask(task.getId()
+        Task newTask = taskManager.createOrUpdateTask(task.getId()
                 , task.getName()
                 , task.getDescription()
                 , task.getStatus()
@@ -353,7 +379,7 @@ public class HttpTaskServer {
     }
 
     public SubTask createOrUpdateSubTaskFromWeb (SubTask subTask) throws IOException {
-        SubTask newSubTask = fileBackedTaskManager.createOrUpdateSubTask(subTask.getId()
+        SubTask newSubTask = taskManager.createOrUpdateSubTask(subTask.getId()
                 , subTask.getName()
                 , subTask.getDescription()
                 , subTask.getStatus()
@@ -364,7 +390,7 @@ public class HttpTaskServer {
     }
 
     public Epic createOrUpdateEpicFromWeb (Epic epic) throws IOException {
-        Epic newEpic = fileBackedTaskManager.createOrUpdateEpic(epic.getId()
+        Epic newEpic = taskManager.createOrUpdateEpic(epic.getId()
                 , epic.getName()
                 , epic.getDescription()
                 , epic.getStatus());

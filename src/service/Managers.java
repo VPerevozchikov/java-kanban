@@ -3,12 +3,12 @@ package service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class Managers {
-    public static TaskManager getDefault() {
-        TaskManager taskManager = new InMemoryTaskManager();
-        return taskManager;
+    public static TaskManager getDefault() throws IOException {
+        return new HttpTaskManager("http://localhost:8078");
     }
 
     public static TaskManager getFileBackedTaskManager() {
@@ -22,13 +22,11 @@ public class Managers {
         return historyManager;
     }
 
-    public static UserManager getUserDefault() {
-        return new InMemoryUserManager();
-    }
+
 
     public static Gson getGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
-//        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDataTimeAdapter());
+
         return gsonBuilder.create();
     }
 }

@@ -21,7 +21,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.filename = filename;
     }
 
-    public static void main(String[] args) throws IOException {
+/*    public static void main(String[] args) throws IOException {
 
         TaskManager taskManager = Managers.getFileBackedTaskManager();
 
@@ -45,7 +45,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         doubleFBTM.load("resources/ListAndHistoryOfTasks.txt");
         doubleFBTM.getListAllTasks();
         doubleFBTM.getHistoryWithPrint();
-    }
+    }*/
 
     @Override
     public Task createOrUpdateTask(Integer idEnter, String name, String description, Status status, Long duration, LocalDateTime startTime) {
@@ -216,6 +216,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         FileBackedTaskManager fileBackedTaskManagerLoadFromFile = new FileBackedTaskManager(file.toString());
         return fileBackedTaskManagerLoadFromFile;
     }
+
+
+
 }
 
 

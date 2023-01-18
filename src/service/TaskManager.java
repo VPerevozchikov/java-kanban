@@ -22,10 +22,16 @@ public interface TaskManager {
     List<Task> getMapSubTasksOfEpic (Integer idOfEpic);
     List<Task> getHistory();
 
+    List<Task> getListOfTasks();
+    List<Epic> getListOfEpics();
+    List<SubTask> getListOfSubTask();
+
     void getHistoryWithPrint();
     Set<Task> getAllTasksAndSubTasksSortedByStartTime();
 
     void printAllTasksAndSubTasksSortedByStartTime();
+
+    void loadAllTasksFromServer();
 }
 
 

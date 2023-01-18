@@ -24,10 +24,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public List<Task> getHistory() {
         ArrayList<Task> listHistory = getTasks();
-/*        System.out.println("История просмотров: ");
-        for (int i = 0; i < listHistory.size(); i++){
-            System.out.println((i + 1) + ". " + listHistory.get(i));
-        }*/
         return listHistory;
     }
 
@@ -40,12 +36,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-
     @Override
     public void remove(int id) {
         removeNode(nodeMap.get(id));
     }
-
 
     private void linkLast(Task task) {
         Node oldTail = tail;

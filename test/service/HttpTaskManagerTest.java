@@ -1,20 +1,28 @@
+package service;
+
 
 import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
+
+import org.junit.jupiter.api.Test;
 import server.HttpTaskServer;
 import server.KVServer;
-import service.Managers;
-import service.TaskManager;
-
 
 import java.io.IOException;
+
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
-public class Main {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-    public static void main(String[] args) throws IOException {
+public class HttpTaskManagerTest {
+
+    @Test
+    void shouldSaveTasksOnServerAndLoadTasksFromServer() throws IOException {
 
         KVServer kvServer = new KVServer();
         kvServer.start();
@@ -47,26 +55,27 @@ public class Main {
 
         taskManager.getTaskById(2);
         taskManager.getTaskById(4);
+        List<Task> listOfOriginalTasks = taskManager.getListAllTasks();
+        Set<Task> historyOriginal = taskManager.getAllTasksAndSubTasksSortedByStartTime();
 
+        assertNotNull(kvServer.data, "Задачи и история не сохраняются на сервере.");
 
         taskServer.stop();
 
+//проверка факта восстановления
 
         TaskManager taskManagerDub = Managers.getDefault();
         HttpTaskServer taskServerDub = new HttpTaskServer(taskManagerDub);
         taskServerDub.start();
         taskManagerDub.loadAllTasksFromServer();
+//        taskManagerDub.deleteTaskById(2);
 
-        taskManagerDub.getListAllTasks();
-
-        Task task3 = taskManagerDub.createOrUpdateTask(null,"Task_Http_NEWWW", "Task_Description_Http_NEWWW",
-                Status.NEW,
-                90L,
-                LocalDateTime.now());
-
-        taskManagerDub.getListAllTasks();
-
+        List<Task> listOfRecoveryTask = taskManagerDub.getListAllTasks();
+//        taskManagerDub.deleteTaskById(2);
+        Set<Task> historyRecovery = taskManagerDub.getAllTasksAndSubTasksSortedByStartTime();
+        assertEquals(listOfOriginalTasks, listOfRecoveryTask, "Задачи не совпадают.");
+        assertEquals(historyOriginal, historyRecovery, "История не совпадают.");
+        taskServerDub.stop();
+        kvServer.stop();
     }
 }
-
-
