@@ -24,7 +24,7 @@ public class Epic extends Task {
 
         if (startTime != null && endTime != null) {
             Duration durationEpic = Duration.between(startTime, endTime);
-            duration = (Long) durationEpic.toMinutes();
+            duration = durationEpic.toMinutes();
             return duration;
         } else {
             duration = null;

@@ -2,8 +2,9 @@ package service;
 
 import model.Task;
 
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
     HashMap<Integer, Node> nodeMap = new HashMap<>();
@@ -31,7 +32,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void getHistoryWithPrint() {
         ArrayList<Task> listHistory = getTasks();
         System.out.println("История просмотров: ");
-        for (int i = 0; i < listHistory.size(); i++){
+        for (int i = 0; i < listHistory.size(); i++) {
             System.out.println((i + 1) + ". " + listHistory.get(i));
         }
     }

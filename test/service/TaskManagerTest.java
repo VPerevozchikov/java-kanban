@@ -3,7 +3,6 @@ package service;
 import model.Epic;
 import model.SubTask;
 import model.Task;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -12,9 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import static model.Status.*;
-import static model.Status.DONE;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class TaskManagerTest<T extends TaskManager> {
 
@@ -258,7 +255,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0),
                 1);
         SubTask subTask2 = taskManager.createOrUpdateSubTask(null, "Test SUBTASK_2",
-                "Test SUBTASK_2 description", NEW,50L,
+                "Test SUBTASK_2 description", NEW, 50L,
                 LocalDateTime.of(2021, 1, 1, 0, 0, 0, 0),
                 1);
 
@@ -313,7 +310,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void shouldNotErrorWhenDeleteAllTasksWhenNumberOfTasksZero(){
+    void shouldNotErrorWhenDeleteAllTasksWhenNumberOfTasksZero() {
         System.out.println("\n\n***** shouldNotErrorWhenDeleteAllTasksWhenNumberOfTasksZero *****");
 
         taskManager.deleteAllTasks();
@@ -702,7 +699,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.printAllTasksAndSubTasksSortedByStartTime();
         System.out.println("-------------------------------------------------\n\n");
     }
-
 
 
 }

@@ -1,6 +1,10 @@
 package service;
 
-import model.*;
+import model.Epic;
+import model.Status;
+import model.SubTask;
+import model.Task;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -103,7 +107,7 @@ public class InMemoryTaskManager implements TaskManager {
             idEnter = ++id;
         }
 
-        Epic newEpic = new Epic (idEnter, name, description, status);
+        Epic newEpic = new Epic(idEnter, name, description, status);
         dataEpic.put(idEnter, newEpic);
         return newEpic;
     }
@@ -131,7 +135,7 @@ public class InMemoryTaskManager implements TaskManager {
                 return null;
             } else {
                 SubTask currentSubTask = dataSubTask.get(idEnter);
-                SubTask updateSubTask = new SubTask(idEnter, name, description, status,  duration, startTime, idOfEpic);
+                SubTask updateSubTask = new SubTask(idEnter, name, description, status, duration, startTime, idOfEpic);
                 updateSubTask.setEndTime(updateSubTask.getEndTime(duration, startTime));
 
                 if (currentSubTask.getStartTime().isEqual(updateSubTask.getStartTime()) && currentSubTask.getEndTime().isEqual(updateSubTask.getEndTime())) {
@@ -151,7 +155,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             idEnter = ++id;
         }
-        SubTask newSubTask = new SubTask(idEnter, name, description, status,  duration, startTime, idOfEpic);
+        SubTask newSubTask = new SubTask(idEnter, name, description, status, duration, startTime, idOfEpic);
         newSubTask.setEndTime(newSubTask.getEndTime(duration, startTime));
 
         if (checkTime((TreeSet<Task>) allTasksAndSubTasksSortedByStartTime, newSubTask.getStartTime(), newSubTask.getEndTime())) {
@@ -184,18 +188,14 @@ public class InMemoryTaskManager implements TaskManager {
                 } else if (endTimeForCheck.isAfter(taskHead.getStartTime())
                         && endTimeForCheck.isBefore(taskHead.getEndTime())) {
                     return false;
-                } else if (startTimeForCheck.isEqual(taskHead.getStartTime())
-                        && endTimeForCheck.isEqual(taskHead.getEndTime())) {
-                    return false;
-                } else {
-                    return true;
-                }
+                } else return !startTimeForCheck.isEqual(taskHead.getStartTime())
+                        || !endTimeForCheck.isEqual(taskHead.getEndTime());
             } else {
                 for (Task task : mapWithTime) {
                     if (startTimeForCheck.isEqual(task.getStartTime()) && endTimeForCheck.isEqual(task.getEndTime())) {
                         return false;
                     } else if (startTimeForCheck.isAfter(task.getEndTime())
-                                && endTimeForCheck.isBefore(mapWithTime.higher(task).getStartTime())) {
+                            && endTimeForCheck.isBefore(mapWithTime.higher(task).getStartTime())) {
                         return true;
                     }
                 }
@@ -203,7 +203,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return false;
     }
-    public void checkStatusEpic (Epic epicForCheck) {
+
+    public void checkStatusEpic(Epic epicForCheck) {
         HashMap<Integer, SubTask> dubMapOfSubTasks = epicForCheck.getMapOfSubTasks();
 
         int countOfDoneSubTasks = 0;
@@ -234,14 +235,14 @@ public class InMemoryTaskManager implements TaskManager {
             epicForCheck.setStatus(Status.NEW);
         } else if (countOfInProgressSubTasks != 0) {
             epicForCheck.setStatus(Status.IN_PROGRESS);
-        } else if (countOfDoneSubTasks == dubMapOfSubTasks.size()){
+        } else if (countOfDoneSubTasks == dubMapOfSubTasks.size()) {
             epicForCheck.setStatus(Status.DONE);
         } else if (countOfNewSubTasks != 0) {
             epicForCheck.setStatus(Status.NEW);
         }
     }
 
-    public void updateDataTimeEpic (Epic epicForUpdate) {
+    public void updateDataTimeEpic(Epic epicForUpdate) {
         LocalDateTime startTime = epicForUpdate.calcStartTime(epicForUpdate.getMapOfSubTasks());
         LocalDateTime endTime = epicForUpdate.calcEndTime(epicForUpdate.getMapOfSubTasks());
 
@@ -250,7 +251,7 @@ public class InMemoryTaskManager implements TaskManager {
         epicForUpdate.calcDuration(startTime, endTime);
     }
 
-    public void fillDataOfSubTask (int id, SubTask subTask, int idOfEpic) {
+    public void fillDataOfSubTask(int id, SubTask subTask, int idOfEpic) {
         dataSubTask.put(id, subTask);
         Epic dubEpic = dataEpic.get(idOfEpic);
         HashMap<Integer, SubTask> dubMapOfSubTasks = dubEpic.getMapOfSubTasks();
@@ -260,7 +261,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         allTasksAndSubTasksSortedByStartTime.add(subTask);
 
-        updateDataTimeEpic (dubEpic);
+        updateDataTimeEpic(dubEpic);
     }
 
     @Override
@@ -365,6 +366,7 @@ public class InMemoryTaskManager implements TaskManager {
         System.out.println(".................");
         return dataAllTasks;
     }
+
     @Override
     public List<Task> getListOfTasks() {
         ArrayList<Task> listOfTasks = new ArrayList<>();
@@ -373,6 +375,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return listOfTasks;
     }
+
     @Override
     public List<Epic> getListOfEpics() {
         ArrayList<Epic> listOfEpics = new ArrayList<>();
@@ -381,6 +384,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return listOfEpics;
     }
+
     @Override
     public List<SubTask> getListOfSubTask() {
         ArrayList<SubTask> listOfSubTasks = new ArrayList<>();
@@ -428,7 +432,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void loadAllTasksFromServer(){
+    public void loadAllTasksFromServer() {
     }
 
 }

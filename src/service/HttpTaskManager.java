@@ -5,14 +5,12 @@ import model.Epic;
 import model.SubTask;
 import model.Task;
 import server.KVTaskClient;
-
 import java.io.IOException;
 import java.util.List;
 
-public class HttpTaskManager extends FileBackedTaskManager{
+public class HttpTaskManager extends FileBackedTaskManager {
     KVTaskClient kvTaskClient;
-    private Gson gson = new Gson();
-
+    private final Gson gson = new Gson();
     String empty = "empty";
 
     public HttpTaskManager(String url) throws IOException {
@@ -42,6 +40,7 @@ public class HttpTaskManager extends FileBackedTaskManager{
         }
 
         //сохранение Epic
+
         if (!dataEpic.isEmpty()) {
             StringBuilder builderStringOfEpics = new StringBuilder();
 
@@ -89,12 +88,11 @@ public class HttpTaskManager extends FileBackedTaskManager{
             builderStringOfHistory.deleteCharAt(0);
 
             String stringWithHistory = builderStringOfHistory.toString();
-            kvTaskClient.put("history",stringWithHistory);
+            kvTaskClient.put("history", stringWithHistory);
         } else {
             kvTaskClient.put("history", empty);
         }
     }
-
 
     @Override
     public void loadAllTasksFromServer() {
@@ -193,6 +191,6 @@ public class HttpTaskManager extends FileBackedTaskManager{
             System.out.println("Список с историей задач пуст");
         }
 
-   }
+    }
 
 }

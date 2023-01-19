@@ -1,7 +1,6 @@
 package server;
 
 import com.google.gson.Gson;
-
 import model.Epic;
 import model.Status;
 import model.SubTask;
@@ -17,9 +16,11 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,7 +29,7 @@ public class HttpTaskServerTest {
 
     private HttpTaskServer taskServer;
 
-    private Gson gson = Managers.getGson();
+    private final Gson gson = Managers.getGson();
     private TaskManager taskManager;
 
     private Task task;
@@ -54,14 +55,14 @@ public class HttpTaskServerTest {
     @Test
     void shouldGetAllTasks() throws IOException, InterruptedException {
 
-        Task task = taskManager.createOrUpdateTask(null,"Task_Http", "Task_Description_Http",
+        Task task = taskManager.createOrUpdateTask(null, "Task_Http", "Task_Description_Http",
                 Status.NEW,
                 90L,
                 LocalDateTime.now());
 
-        Epic epic = taskManager.createOrUpdateEpic(null,"Epic_Http", "Epic_Description_Http", Status.NEW);
+        Epic epic = taskManager.createOrUpdateEpic(null, "Epic_Http", "Epic_Description_Http", Status.NEW);
 
-        SubTask subTask = taskManager.createOrUpdateSubTask(null,"SubTask_Http", "SubTask_Description_Http",
+        SubTask subTask = taskManager.createOrUpdateSubTask(null, "SubTask_Http", "SubTask_Description_Http",
                 Status.DONE, 8000L,
                 LocalDateTime.of(2015, 1, 1, 0, 0, 0, 0),
                 2);
@@ -82,7 +83,7 @@ public class HttpTaskServerTest {
     @Test
     void shouldGetTaskById() throws IOException, InterruptedException {
 
-        Task task = taskManager.createOrUpdateTask(null,"Task_Http", "Task_Description_Http",
+        Task task = taskManager.createOrUpdateTask(null, "Task_Http", "Task_Description_Http",
                 Status.NEW,
                 90L,
                 LocalDateTime.now());
@@ -101,15 +102,15 @@ public class HttpTaskServerTest {
     @Test
     void shouldCreateOrUpdateTask() throws IOException, InterruptedException {
 
-         Task task = taskManager.createOrUpdateTask(null,"Task_Http", "Task_Description_Http",
+        Task task = taskManager.createOrUpdateTask(null, "Task_Http", "Task_Description_Http",
                 Status.NEW,
                 90L,
                 LocalDateTime.now());
 
-         Task updateTask = new Task(task.getId(), "Task_Http_Update", "Task_Description_Http_Update",
-                 task.getStatus(),
-                 task.getDuration(),
-                 task.getStartTime());
+        Task updateTask = new Task(task.getId(), "Task_Http_Update", "Task_Description_Http_Update",
+                task.getStatus(),
+                task.getDuration(),
+                task.getStartTime());
 
         String jsonString = gson.toJson(updateTask);
 
@@ -130,7 +131,7 @@ public class HttpTaskServerTest {
     @Test
     void shouldCreateOrUpdateEpic() throws IOException, InterruptedException {
 
-        Epic epic = taskManager.createOrUpdateEpic(null,"Epic_Http", "Epic_Description_Http",
+        Epic epic = taskManager.createOrUpdateEpic(null, "Epic_Http", "Epic_Description_Http",
                 Status.NEW);
 
         Epic updateEpic = new Epic(epic.getId(), "Epic_Http_Update", "Epic_Description_Http_Update",
@@ -155,14 +156,14 @@ public class HttpTaskServerTest {
     @Test
     void shouldCreateOrUpdateSubTask() throws IOException, InterruptedException {
 
-        Epic epic = taskManager.createOrUpdateEpic(null,"Epic_Http", "Epic_Description_Http", Status.NEW);
+        Epic epic = taskManager.createOrUpdateEpic(null, "Epic_Http", "Epic_Description_Http", Status.NEW);
 
-        SubTask subTask = taskManager.createOrUpdateSubTask(null,"SubTask_Http", "SubTask_Description_Http",
+        SubTask subTask = taskManager.createOrUpdateSubTask(null, "SubTask_Http", "SubTask_Description_Http",
                 Status.DONE, 8000L,
                 LocalDateTime.of(2015, 1, 1, 0, 0, 0, 0),
                 1);
 
-        SubTask updateSubTask = new SubTask(subTask.getId(),"SubTask_Http_Update", "SubTask_Description_Http_Update",
+        SubTask updateSubTask = new SubTask(subTask.getId(), "SubTask_Http_Update", "SubTask_Description_Http_Update",
                 Status.DONE, 8000L,
                 LocalDateTime.of(2015, 1, 1, 0, 0, 0, 0),
                 1);
@@ -186,14 +187,14 @@ public class HttpTaskServerTest {
     @Test
     void shouldGetSubtasksOfEpicById() throws IOException, InterruptedException {
 
-        Task task = taskManager.createOrUpdateTask(null,"Task_Http", "Task_Description_Http",
+        Task task = taskManager.createOrUpdateTask(null, "Task_Http", "Task_Description_Http",
                 Status.NEW,
                 90L,
                 LocalDateTime.now());
 
-        Epic epic = taskManager.createOrUpdateEpic(null,"Epic_Http", "Epic_Description_Http", Status.NEW);
+        Epic epic = taskManager.createOrUpdateEpic(null, "Epic_Http", "Epic_Description_Http", Status.NEW);
 
-        SubTask subTask = taskManager.createOrUpdateSubTask(null,"SubTask_Http", "SubTask_Description_Http",
+        SubTask subTask = taskManager.createOrUpdateSubTask(null, "SubTask_Http", "SubTask_Description_Http",
                 Status.DONE, 8000L,
                 LocalDateTime.of(2015, 1, 1, 0, 0, 0, 0),
                 2);
@@ -211,14 +212,14 @@ public class HttpTaskServerTest {
     @Test
     void shouldGetHistory() throws IOException, InterruptedException {
 
-        Task task = taskManager.createOrUpdateTask(null,"Task_Http", "Task_Description_Http",
+        Task task = taskManager.createOrUpdateTask(null, "Task_Http", "Task_Description_Http",
                 Status.NEW,
                 90L,
                 LocalDateTime.now());
 
-        Epic epic = taskManager.createOrUpdateEpic(null,"Epic_Http", "Epic_Description_Http", Status.NEW);
+        Epic epic = taskManager.createOrUpdateEpic(null, "Epic_Http", "Epic_Description_Http", Status.NEW);
 
-        SubTask subTask = taskManager.createOrUpdateSubTask(null,"SubTask_Http", "SubTask_Description_Http",
+        SubTask subTask = taskManager.createOrUpdateSubTask(null, "SubTask_Http", "SubTask_Description_Http",
                 Status.DONE, 8000L,
                 LocalDateTime.of(2015, 1, 1, 0, 0, 0, 0),
                 2);
@@ -244,14 +245,14 @@ public class HttpTaskServerTest {
     @Test
     void shouldGetPrioritizedTasks() throws IOException, InterruptedException {
 
-        Task task = taskManager.createOrUpdateTask(null,"Task_Http", "Task_Description_Http",
+        Task task = taskManager.createOrUpdateTask(null, "Task_Http", "Task_Description_Http",
                 Status.NEW,
                 90L,
                 LocalDateTime.now());
 
-        Epic epic = taskManager.createOrUpdateEpic(null,"Epic_Http", "Epic_Description_Http", Status.NEW);
+        Epic epic = taskManager.createOrUpdateEpic(null, "Epic_Http", "Epic_Description_Http", Status.NEW);
 
-        SubTask subTask = taskManager.createOrUpdateSubTask(null,"SubTask_Http", "SubTask_Description_Http",
+        SubTask subTask = taskManager.createOrUpdateSubTask(null, "SubTask_Http", "SubTask_Description_Http",
                 Status.DONE, 8000L,
                 LocalDateTime.of(2015, 1, 1, 0, 0, 0, 0),
                 2);
@@ -280,14 +281,14 @@ public class HttpTaskServerTest {
     @Test
     void shouldDeleteTaskById() throws IOException, InterruptedException {
 
-        Task task = taskManager.createOrUpdateTask(null,"Task_Http", "Task_Description_Http",
+        Task task = taskManager.createOrUpdateTask(null, "Task_Http", "Task_Description_Http",
                 Status.NEW,
                 90L,
                 LocalDateTime.now());
 
-        Epic epic = taskManager.createOrUpdateEpic(null,"Epic_Http", "Epic_Description_Http", Status.NEW);
+        Epic epic = taskManager.createOrUpdateEpic(null, "Epic_Http", "Epic_Description_Http", Status.NEW);
 
-        SubTask subTask = taskManager.createOrUpdateSubTask(null,"SubTask_Http", "SubTask_Description_Http",
+        SubTask subTask = taskManager.createOrUpdateSubTask(null, "SubTask_Http", "SubTask_Description_Http",
                 Status.DONE, 8000L,
                 LocalDateTime.of(2015, 1, 1, 0, 0, 0, 0),
                 2);
@@ -308,14 +309,14 @@ public class HttpTaskServerTest {
     @Test
     void shouldDeleteAllTasks() throws IOException, InterruptedException {
 
-        Task task = taskManager.createOrUpdateTask(null,"Task_Http", "Task_Description_Http",
+        Task task = taskManager.createOrUpdateTask(null, "Task_Http", "Task_Description_Http",
                 Status.NEW,
                 90L,
                 LocalDateTime.now());
 
-        Epic epic = taskManager.createOrUpdateEpic(null,"Epic_Http", "Epic_Description_Http", Status.NEW);
+        Epic epic = taskManager.createOrUpdateEpic(null, "Epic_Http", "Epic_Description_Http", Status.NEW);
 
-        SubTask subTask = taskManager.createOrUpdateSubTask(null,"SubTask_Http", "SubTask_Description_Http",
+        SubTask subTask = taskManager.createOrUpdateSubTask(null, "SubTask_Http", "SubTask_Description_Http",
                 Status.DONE, 8000L,
                 LocalDateTime.of(2015, 1, 1, 0, 0, 0, 0),
                 2);

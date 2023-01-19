@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 public class Managers {
     public static TaskManager getDefault() throws IOException {
@@ -17,11 +16,10 @@ public class Managers {
     }
 
 
-    public static HistoryManager getDefaultHistory(){
+    public static HistoryManager getDefaultHistory() {
         HistoryManager historyManager = new InMemoryHistoryManager();
         return historyManager;
     }
-
 
 
     public static Gson getGson() {

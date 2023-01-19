@@ -53,6 +53,7 @@ public class Task {
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
+
     public String getDescription() {
         return description;
     }
@@ -69,6 +70,7 @@ public class Task {
     public void setId(Integer id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
@@ -95,7 +97,7 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash( id, name, description, status);
+        return Objects.hash(id, name, description, status);
     }
 
     @Override
@@ -125,7 +127,6 @@ public class Task {
 
         return result;
     }
-
 
 
 }

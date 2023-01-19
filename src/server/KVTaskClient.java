@@ -13,12 +13,12 @@ public class KVTaskClient {
     String url;
 
 
-
     public KVTaskClient(String url) {
         client = HttpClient.newHttpClient();
         this.url = url;
         apiToken = register();
     }
+
     public String register() {
         URI uri = URI.create(url + "/register");
 
@@ -34,7 +34,6 @@ public class KVTaskClient {
         try {
             final HttpResponse<String> response = client.send(request, handler);
             apiTokenFromKVServer = response.body();
-
         } catch (NullPointerException | IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка.\n" +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
@@ -45,27 +44,36 @@ public class KVTaskClient {
     public void put(String key, String json) {
         URI uri = URI.create(url + "/save/" + key + "?API_TOKEN=" + apiToken);
 
+        if (key == null) {
+            System.out.println("Значение key не должно быть null");
+            return;
+        } else if (json == null) {
+            System.out.println("Значение value не должно быть null");
+            return;
+        }
+
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .uri(uri)
                 .build();
-
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
         try {
             final HttpResponse<String> response = client.send(request, handler);
+
             if (response.statusCode() == 200) {
                 System.out.println("Данные записаны");
             } else {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
             }
-        } catch (NullPointerException | IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка.\n" +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
         }
     }
 
     public String load(String key) {
+
         URI uri = URI.create(url + "/load/" + key + "?API_TOKEN=" + apiToken);
 
         HttpRequest request = HttpRequest.newBuilder()

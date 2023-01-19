@@ -15,7 +15,7 @@ import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    private String filename;
+    private final String filename;
 
     public FileBackedTaskManager(String filename) {
         this.filename = filename;
@@ -140,7 +140,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             if (taskTxt[1].equals("TASK")) {
                 Task recoveryTask = new Task(Integer.parseInt(taskTxt[0]),
                         taskTxt[2], taskTxt[4], checkStatus(taskTxt[3]),
-                        Long.parseLong(taskTxt[5]),LocalDateTime.parse(taskTxt[6]));
+                        Long.parseLong(taskTxt[5]), LocalDateTime.parse(taskTxt[6]));
                 recoveryTask.setEndTime(LocalDateTime.parse(taskTxt[7]));
 
                 dataTask.put(Integer.parseInt(taskTxt[0]), recoveryTask);
@@ -179,7 +179,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    public List<String[]> readFromFile (String filename) {
+    public List<String[]> readFromFile(String filename) {
         List<String[]> dataFromTxt = new ArrayList<>();
         try (FileReader reader = new FileReader(filename, StandardCharsets.UTF_8)) {
             BufferedReader br = new BufferedReader(reader);
@@ -193,7 +193,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
         return dataFromTxt;
     }
-
 
 
     public Status checkStatus(String statusFromTxt) {
@@ -216,7 +215,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         FileBackedTaskManager fileBackedTaskManagerLoadFromFile = new FileBackedTaskManager(file.toString());
         return fileBackedTaskManagerLoadFromFile;
     }
-
 
 
 }
