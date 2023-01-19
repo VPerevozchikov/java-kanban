@@ -57,13 +57,6 @@ public class Main {
 
         taskManagerDub.getListAllTasks();
 
-        Task task3 = taskManagerDub.createOrUpdateTask(null, "Task_Http_NEWWW", "Task_Description_Http_NEWWW",
-                Status.NEW,
-                90L,
-                LocalDateTime.now());
-
-        taskManagerDub.getListAllTasks();
-
     }
 }
 

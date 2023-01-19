@@ -34,7 +34,7 @@ public class KVTaskClient {
         try {
             final HttpResponse<String> response = client.send(request, handler);
             apiTokenFromKVServer = response.body();
-        } catch (NullPointerException | IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка.\n" +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
         }
@@ -89,8 +89,8 @@ public class KVTaskClient {
             final HttpResponse<String> response = client.send(request, handler);
             dataFromKVServer = response.body();
 
-        } catch (NullPointerException | IOException | InterruptedException e) {
-            System.out.println("Во время выполнения запроса возникла ошибка.");
+        } catch (IOException | InterruptedException e) {
+            System.out.println("Во время выполнения запроса возникла ошибка");
         }
         return dataFromKVServer;
     }

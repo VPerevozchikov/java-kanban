@@ -9,6 +9,7 @@ import model.SubTask;
 import model.Task;
 import service.Managers;
 import service.TaskManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -16,6 +17,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.regex.Pattern;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HttpTaskServer {
@@ -376,31 +378,31 @@ public class HttpTaskServer {
     }
 
     public Task createOrUpdateTaskFromWeb(Task task) throws IOException {
-        Task newTask = taskManager.createOrUpdateTask(task.getId()
-                , task.getName()
-                , task.getDescription()
-                , task.getStatus()
-                , task.getDuration()
-                , task.getStartTime());
+        Task newTask = taskManager.createOrUpdateTask(task.getId(),
+                task.getName(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getDuration(),
+                task.getStartTime());
         return newTask;
     }
 
     public SubTask createOrUpdateSubTaskFromWeb(SubTask subTask) throws IOException {
-        SubTask newSubTask = taskManager.createOrUpdateSubTask(subTask.getId()
-                , subTask.getName()
-                , subTask.getDescription()
-                , subTask.getStatus()
-                , subTask.getDuration()
-                , subTask.getStartTime()
-                , subTask.getIdOfEpic());
+        SubTask newSubTask = taskManager.createOrUpdateSubTask(subTask.getId(),
+                subTask.getName(),
+                subTask.getDescription(),
+                subTask.getStatus(),
+                subTask.getDuration(),
+                subTask.getStartTime(),
+                subTask.getIdOfEpic());
         return newSubTask;
     }
 
     public Epic createOrUpdateEpicFromWeb(Epic epic) throws IOException {
-        Epic newEpic = taskManager.createOrUpdateEpic(epic.getId()
-                , epic.getName()
-                , epic.getDescription()
-                , epic.getStatus());
+        Epic newEpic = taskManager.createOrUpdateEpic(epic.getId(),
+                epic.getName(),
+                epic.getDescription(),
+                epic.getStatus());
         return newEpic;
     }
 }
