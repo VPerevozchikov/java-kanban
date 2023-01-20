@@ -5,13 +5,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-
 public class KVTaskClient {
-
     public String apiToken;
     public HttpClient client;
     String url;
-
 
     public KVTaskClient(String url) {
         client = HttpClient.newHttpClient();
@@ -34,9 +31,15 @@ public class KVTaskClient {
         try {
             final HttpResponse<String> response = client.send(request, handler);
             apiTokenFromKVServer = response.body();
+
+            if (response.statusCode() == 200) {
+                System.out.println("apiToken " + apiTokenFromKVServer + " присвоен клиенту");
+            } else {
+                System.out.println("Что-то пошло не так. KVServer вернул код состояния: " + response.statusCode());
+            }
+
         } catch (IOException | InterruptedException e) {
-            System.out.println("Во время выполнения запроса возникла ошибка.\n" +
-                    "Проверьте, пожалуйста, адрес и повторите попытку.");
+            System.out.println("Во время выполнения запроса возникла ошибка.");
         }
         return apiTokenFromKVServer;
     }
@@ -64,11 +67,10 @@ public class KVTaskClient {
             if (response.statusCode() == 200) {
                 System.out.println("Данные записаны");
             } else {
-                System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
+                System.out.println("Что-то пошло не так. KVServer вернул код состояния: " + response.statusCode());
             }
         } catch (IOException | InterruptedException e) {
-            System.out.println("Во время выполнения запроса возникла ошибка.\n" +
-                    "Проверьте, пожалуйста, адрес и повторите попытку.");
+            System.out.println("Во время выполнения запроса возникла ошибка.");
         }
     }
 
@@ -89,6 +91,11 @@ public class KVTaskClient {
             final HttpResponse<String> response = client.send(request, handler);
             dataFromKVServer = response.body();
 
+            if (response.statusCode() == 200) {
+                System.out.println("Данные восстановлены с KVServer");
+            } else {
+                System.out.println("Что-то пошло не так. KVServer вернул код состояния: " + response.statusCode());
+            }
         } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка");
         }

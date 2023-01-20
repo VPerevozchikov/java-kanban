@@ -190,7 +190,5 @@ public class HttpTaskManager extends FileBackedTaskManager {
         } else {
             System.out.println("Список с историей задач пуст");
         }
-
     }
-
 }
